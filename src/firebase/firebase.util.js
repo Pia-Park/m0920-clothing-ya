@@ -43,7 +43,8 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
 
 firebase.initializeApp(config)
 
-export const auth = firebase.auth()
+export const auth = firebase.auth() // for log in
+
 export const firestore = firebase.firestore()
 
 const provider = new firebase.auth.GoogleAuthProvider()

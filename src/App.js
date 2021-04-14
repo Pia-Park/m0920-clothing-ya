@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import './App.scss';
-import {Switch, Route} from 'react-router-dom'
+import {Switch, Route, Redirect} from 'react-router-dom'
 
 import Header from './components/header/header.component'
 import HomePage from './pages/homepage/homepage.component';
@@ -29,18 +29,23 @@ function App() {
   useEffect(()=>{
 
     let unsubscribeFromAuth = null
-    
+
     unsubscribeFromAuth = auth.onAuthStateChanged( async (userAuth) => {
       // console.log(userAuth);
       const userRef =  await createUserProfileDocument(userAuth)
 
-      userRef.onSnapshot((snapShot) => {
-        // console.log(snapShot.data());
-        setCurrentUser({
-          id: snapShot.id,
-          ...snapShot.data()
+      if(userAuth){
+        userRef.onSnapshot((snapShot) => {
+          // console.log(snapShot.data());
+          setCurrentUser({
+            id: snapShot.id,
+            ...snapShot.data()
+          })
         })
-      })
+
+      } else {
+        setCurrentUser(userAuth)
+      }
 
     })
     //componentDidUnmount <-remove from doc 
@@ -55,11 +60,11 @@ function App() {
 
   return (
     <div className="App">
-      <Header />
+      <Header currentUser={currentUser} />
       <Switch>
         <Route exact path="/" component={HomePage} />
         <Route path="/shop" component={ShopPage} />
-        <Route path="/signin" component={SignInAndSignUp} />
+        <Route path="/signin" render={()=>currentUser ? (<Redirect to="/" />):(<SignInAndSignUp />)} />
         <Route component={Page404} />
       </Switch>
     </div>
