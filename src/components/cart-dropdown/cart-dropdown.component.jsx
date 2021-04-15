@@ -1,18 +1,20 @@
 import React from 'react'
+import {connect} from 'react-redux'
+
 import './cart-dropdown.styles.scss'
 
 import CartItem from '../cart-item/cart-item.component'
 import CustomButton from '../custom-button/custom-button.component'
 
 
-const CartDropdown = ({ cartItems }) => {
+const CartDropdown = ({ cartItemProps }) => {
 
     return (
         <div className="cart-dropdown">
             <div className="cart-itmes">               
                 {
-                    cartItems.length ? 
-                    cartItems.map((cartItem) => (
+                    cartItemProps.length ? 
+                    cartItemProps.map((cartItem) => (
                         <CartItem key={cartItem.id} item={cartItem} />
                     )) : (
                         <span className="empty-message">Your cart is empty</span>
@@ -27,4 +29,8 @@ const CartDropdown = ({ cartItems }) => {
     )
 }
 
-export default CartDropdown
+const mapStateToProps = (state) => ({
+    cartItemProps: state.cart.cartItems
+})
+
+export default connect(mapStateToProps)(CartDropdown)
