@@ -6,11 +6,13 @@ import './cart-dropdown.styles.scss'
 import CartItem from '../cart-item/cart-item.component'
 import CustomButton from '../custom-button/custom-button.component'
 
+import { CartDropdownContainer, CartDropdownButton } from './cart-dropdown.styles'
+
 
 const CartDropdown = ({ cartItemProps }) => {
 
     return (
-        <div className="cart-dropdown">
+        <CartDropdownContainer>
             <div className="cart-items">               
                 {
                     cartItemProps.length ? 
@@ -21,11 +23,11 @@ const CartDropdown = ({ cartItemProps }) => {
                     )
                 }
             </div>
-            <CustomButton>
+            <CartDropdownButton>
                 Go to Checkout
-            </CustomButton>
+            </CartDropdownButton>
 
-        </div>
+        </CartDropdownContainer>
     )
 }
 

@@ -4,7 +4,6 @@ import {connect} from 'react-redux'
 import './cart-icon.styles.scss'
 
 import {toggleCartHidden} from '../../redux/cart/cart.actions'
-import {updateQuantity} from '../../redux/cart/cart.util'
 
 import { ReactComponent as ShoppingIcon } from '../../assets/shopping-bag.svg'
 
