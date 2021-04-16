@@ -11,7 +11,7 @@ const CartDropdown = ({ cartItemProps }) => {
 
     return (
         <div className="cart-dropdown">
-            <div className="cart-itmes">               
+            <div className="cart-items">               
                 {
                     cartItemProps.length ? 
                     cartItemProps.map((cartItem) => (
