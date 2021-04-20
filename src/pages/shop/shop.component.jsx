@@ -7,32 +7,46 @@ import {
   firestore,
   convertCollectionSnapShotToMap,
 } from '../../firebase/firebase.util'
-// import CollectionPreview from '../../components/collection-preview/collection-preview.component'
-// import CollectionOverview from '../../components/collection-overview/collections-overview.component'
+
 import {
-  fetchCollectionsStartAsync,
+  fetchCollectionsStart,
+  fetchCollectionsSuccess,
+  fetchCollectionsFailure,
   updateCollection,
 } from '../../redux/shop/shop.actions'
+
 
 import CollectionOverviewContainer from '../../components/collection-overview/collection-overview.container'
 import CollectionPageContainer from '../collection/collection-page.container'
 
+
+
+
+
 const ShopPage = ({
-  fetchCollectionsStartAsyncProps,
+  fetchCollectionsStartProps,
+  fetchCollectionsSuccessProps,
   updateCollectionProps,
-  match
+  fetchCollectionsFailureProps,
+  match,
 }) => {
   useEffect(() => {
-    fetchCollectionsStartAsyncProps()
+    // fetchCollectionsStartAsyncProps() //promise-based fetching of data
 
     let unsubscribeFromSnapShot = null
 
     const collectionRef = firestore.collection('collections')
 
-    unsubscribeFromSnapShot = collectionRef.onSnapshot(async (snapShot) => {
-      const collectionsMap = convertCollectionSnapShotToMap(snapShot)
-      updateCollectionProps(collectionsMap)
-    })
+    try {
+      unsubscribeFromSnapShot = collectionRef.onSnapshot(async (snapShot) => {
+        fetchCollectionsStartProps()
+        const collectionsMap = await convertCollectionSnapShotToMap(snapShot)
+        // updateCollectionProps(collectionsMap)
+        fetchCollectionsSuccessProps(collectionsMap)
+      })
+    } catch (error) {
+      fetchCollectionsFailureProps(error.message)
+    }
 
     return () => {
       unsubscribeFromSnapShot() //unsubscribe
@@ -47,8 +61,15 @@ const ShopPage = ({
             ))
         } */}
 
-      <Route exact path={`${match.path}`} component={CollectionOverviewContainer} />
-      <Route path={`${match.path}/:collectionId`} component={CollectionPageContainer} />
+      <Route
+        exact
+        path={`${match.path}`}
+        component={CollectionOverviewContainer}
+      />
+      <Route
+        path={`${match.path}/:collectionId`}
+        component={CollectionPageContainer}
+      />
     </div>
   )
 }
@@ -76,14 +97,16 @@ const ShopPage = ({
 //   }
 // }
 
-const mapStateToProps = (state) => ({
-  collectionsProps: state.shop.collections,
-})
+// const mapStateToProps = (state) => ({
+//   collectionsProps: state.shop.collections
+// })
+
 
 const mapDispatchToProps = (dispatch) => ({
-  updateCollectionProps: (collectionsMap) =>
-    dispatch(updateCollection(collectionsMap)),
-  fetchCollectionsStartAsyncProps: () => dispatch(fetchCollectionsStartAsync()),
+  updateCollectionProps: (collectionsMap) =>dispatch(updateCollection(collectionsMap)),
+  fetchCollectionsStartProps: () => dispatch(fetchCollectionsStart()),
+  fetchCollectionsSuccessProps: (collectionsMap) => dispatch(fetchCollectionsSuccess(collectionsMap)),
+  fetchCollectionsFailureProps: (err) => dispatch(fetchCollectionsFailure(err)),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(ShopPage)
+export default connect(null, mapDispatchToProps)(ShopPage)
