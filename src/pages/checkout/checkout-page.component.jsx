@@ -17,6 +17,7 @@ import {
 } from '../../redux/cart/cart.selector'
 
 import CheckOutItem from '../../components/checkout-item/checkout-item.component'
+import StripeCheckoutButton from '../../components/stripe-button/stripe-button.component'
 
 const CheckoutPage = ({cartItems, total}) => (
     <CheckoutPageContainer>
@@ -48,6 +49,7 @@ const CheckoutPage = ({cartItems, total}) => (
 
         </WarningContainer>
         {/* stripe button here */}
+        <StripeCheckoutButton />
     </CheckoutPageContainer>
 )
 
