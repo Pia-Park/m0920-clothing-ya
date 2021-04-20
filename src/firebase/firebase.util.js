@@ -12,19 +12,25 @@ const config = {
 }
 
 export const createUserProfileDocument = async (userAuth, additionalData) => {
+    
     if(!userAuth) return
 
-    const userRef = firestore.doc(`users/${userAuth.uid}`) //path to user object 
-    // console.log('userRef:', userRef);
+    // const userRef = firestore.doc('users/123425tqwrtqwyt')
+    const userRef = firestore.doc(`users/${userAuth.uid}`) //path to user object
+
+    // console.log('userRef: ', userRef)
 
     const snapShot = await userRef.get()
-    // console.log(snapShot); //<-important exist
+
+    // console.log('snapShot: ', snapShot)
 
     if(!snapShot.exists){
         const {displayName, email} = userAuth
         const createdAt = new Date()
 
-        try { //<-async use try catch
+        console.log('test: ', additionalData)
+
+        try {
             await userRef.set({
                 displayName,
                 email,
@@ -32,19 +38,52 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
                 ...additionalData
             })
         } catch (error) {
-            console.log('Error creating user', error.message);
-            
+            console.log('Error creating user: ', error.message)
         }
     }
 
     return userRef
-
 }
+
+export const addCollectionAndDocuments = async (collectionKey, objectToAdd) => {
+
+    const collectionRef = firestore.collection(collectionKey)
+
+    console.log(collectionRef)
+
+    const batch = firestore.batch()
+
+    objectToAdd.forEach((obj) => {
+        const newDocRef = collectionRef.doc()
+
+        batch.set(newDocRef, obj)
+    })
+
+    return await batch.commit()
+}
+
+export const convertCollectionSnapShotToMap = (collections) => {
+    const transformedCollection = collections.docs.map(doc => {
+        const {title, items} = doc.data()
+        return {
+            id: doc.id,
+            title,
+            items,
+            routeName: encodeURI(title.toLowerCase())
+        }
+    })
+
+    return transformedCollection.reduce((acc, collection) => {
+        acc[collection.title.toLowerCase()] = collection
+        return acc
+    }, {})
+}
+
+
 
 firebase.initializeApp(config)
 
-export const auth = firebase.auth() // for log in
-
+export const auth = firebase.auth()
 export const firestore = firebase.firestore()
 
 const provider = new firebase.auth.GoogleAuthProvider()
